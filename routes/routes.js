@@ -1,25 +1,23 @@
 // routes.js
 const express = require('express');
 const router = express.Router();
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const Asset = require('../models/asset');
 const SoldAsset = require('../models/soldAsset');
 
 router.post('/register', async (req, res) => {
   try {
-    const { name, age, gender, dob, bankBalance } = req.body;
+    const { username, age, gender, dob, bankBalance } = req.body;
 
     console.log(req.body);
 
-    const existingUser = await User.findOne({ name });
+    const existingUser = await User.findOne({ name: username });
     if (existingUser) {
       return res.status(400).json({ message: 'name already exists' });
     }
 
     const newUser = new User({
-      name,
+      username,
       age,
       gender,
       dob,
@@ -70,7 +68,7 @@ router.post('/purchase-asset', async (req, res) => {
     }
 
     // Check if the user exists
-    const user = await User.findOne(userName);
+    const user = await User.findOne({ name: username });
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
@@ -111,11 +109,11 @@ router.post('/purchase-asset', async (req, res) => {
   }
 });
 
-router.get('/profile/:userName', async (req, res) => {
+router.get('/profile/:username', async (req, res) => {
   try {
-    const userId = req.params.userName;
+    const username = req.params.username;
 
-    const user = await User.findOne(userName)
+    const user = await User.findOne({ name: username })
       .populate('ownedAssets') // Populate the ownedAssets field with Asset documents
       .exec();
 
