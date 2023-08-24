@@ -9,18 +9,14 @@ const SoldAsset = require('../models/soldAsset');
 
 router.post('/register', async (req, res) => {
   try {
-    const { username, password, name, age, gender, dob } = req.body;
+    const { name, age, gender, dob } = req.body;
 
     const existingUser = await User.findOne({ username });
     if (existingUser) {
       return res.status(400).json({ message: 'Username already exists' });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-
     const newUser = new User({
-      username,
-      password: hashedPassword,
       name,
       age,
       gender,
