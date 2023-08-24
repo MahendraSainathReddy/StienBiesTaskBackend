@@ -5,7 +5,7 @@ const userSchema = new mongoose.Schema({
   age: { type: Number, required: true },
   gender: { type: String, required: true },
   dob: { type: Date, required: true },
-  bankBalance: { type: Number, default: 0 },
+  bankBalance: { type: Number, required: true },
   ownedAssets: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Asset' }],
 });
 
