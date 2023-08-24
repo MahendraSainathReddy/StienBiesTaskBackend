@@ -9,7 +9,7 @@ const SoldAsset = require('../models/soldAsset');
 
 router.post('/register', async (req, res) => {
   try {
-    const { name, age, gender, dob } = req.body;
+    const { name, age, gender, dob, bankBalance } = req.body;
 
     const existingUser = await User.findOne({ name });
     if (existingUser) {
@@ -21,6 +21,7 @@ router.post('/register', async (req, res) => {
       age,
       gender,
       dob,
+      bankBalance
     });
 
     await newUser.save();
