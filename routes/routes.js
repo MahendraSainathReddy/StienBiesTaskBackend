@@ -61,19 +61,18 @@ router.post('/purchase-asset', async (req, res) => {
   try {
     const { userId, assetName } = req.body;
 
-    // Find the asset by name
     const asset = await Asset.findOne({ name: assetName });
     if (!asset) {
       return res.status(404).json({ message: 'Asset not found' });
     }
 
-    // Check if the user exists
+
     const user = await User.findOne({ name: username });
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // Check if the user has enough balance to make the purchase
+
     if (user.bankBalance < asset.cost) {
       return res.status(400).json({ message: 'Insufficient funds' });
     }
@@ -87,15 +86,12 @@ router.post('/purchase-asset', async (req, res) => {
       return res.status(400).json({ message: 'Asset already owned by the user' });
     }
 
-    // Deduct the cost from the user's bank balance
     user.bankBalance -= asset.cost;
     await user.save();
-
-    // Record the purchase in the SoldAsset collection
     const soldAsset = new SoldAsset({
       userId: userId,
       assetName: asset.name,
-      quantity: 1, // Assuming each user can purchase only one unit
+      quantity: 1,
       cost: asset.cost,
     });
     await soldAsset.save();
@@ -114,7 +110,6 @@ router.get('/profile/:username', async (req, res) => {
     const username = req.params.username;
 
     const user = await User.findOne({ name: username })
-      .populate('ownedAssets') // Populate the ownedAssets field with Asset documents
       .exec();
 
     if (!user) {
@@ -122,8 +117,6 @@ router.get('/profile/:username', async (req, res) => {
     }
 
     console.log('Owned Assets:', user.ownedAssets);
-
-    // The user.ownedAssets array now contains populated Asset documents
     res.status(200).json(user);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching user profile', error: error.message });
